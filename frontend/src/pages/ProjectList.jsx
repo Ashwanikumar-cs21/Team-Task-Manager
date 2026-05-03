@@ -121,7 +121,8 @@ export default function ProjectList() {
           // Project card grid
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
             {projects.map((p, i) => {
-              const isAdmin = String(p.createdBy?._id) === user?._id;
+              const myEntry = p.members?.find((m) => String(m.user?._id) === user?._id);
+              const myRole  = myEntry?.role ?? "member";
               return (
                 <div
                   key={p._id}
@@ -132,14 +133,16 @@ export default function ProjectList() {
                   <div className={`h-1.5 ${CARD_COLORS[i % CARD_COLORS.length]}`} />
 
                   <div className="p-5">
-                    {/* Project name + admin badge */}
+                    {/* Project name + role badge */}
                     <div className="flex items-start justify-between gap-2 mb-2">
                       <h2 className="font-semibold text-gray-800">{p.name}</h2>
-                      {isAdmin && (
-                        <span className="text-xs bg-blue-50 text-blue-600 border border-blue-100 px-2 py-0.5 rounded-full font-medium shrink-0">
-                          Admin
-                        </span>
-                      )}
+                      <span className={`text-xs px-2 py-0.5 rounded-full font-medium shrink-0 border ${
+                        myRole === "admin"
+                          ? "bg-blue-50 text-blue-600 border-blue-100"
+                          : "bg-gray-50 text-gray-500 border-gray-200"
+                      }`}>
+                        {myRole === "admin" ? "Admin" : "Member"}
+                      </span>
                     </div>
 
                     {/* Project description, capped at 2 lines */}
@@ -153,11 +156,11 @@ export default function ProjectList() {
                       <div className="flex -space-x-2">
                         {p.members?.slice(0, 4).map((m) => (
                           <div
-                            key={m._id}
-                            title={m.name}
+                            key={m.user?._id}
+                            title={`${m.user?.name} (${m.role})`}
                             className="w-7 h-7 rounded-full bg-blue-500 border-2 border-white flex items-center justify-center text-white text-xs font-bold"
                           >
-                            {m.name?.[0]?.toUpperCase()}
+                            {m.user?.name?.[0]?.toUpperCase()}
                           </div>
                         ))}
                         {/* Overflow indicator when more than 4 members */}

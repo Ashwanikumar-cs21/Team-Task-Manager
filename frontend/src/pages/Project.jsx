@@ -129,8 +129,10 @@ export default function Project() {
   // Ref holds the task ID being dragged so it's accessible in the drop handler
   const dragTaskId = useRef(null);
 
-  // Current user is admin if they created the project
-  const isAdmin = project && String(project.createdBy?._id) === user?._id;
+  // Current user is admin if they have the admin role in the members array
+  const isAdmin = project?.members?.some(
+    (m) => String(m.user?._id) === user?._id && m.role === "admin"
+  );
 
   // Data fetchers — called on mount and after mutations
   const loadProject  = () => API.get(`/projects/${id}`).then((res) => setProject(res.data));
@@ -206,6 +208,17 @@ export default function Project() {
     }
   };
 
+  // Change a member's role
+  const updateRole = async (userId, role) => {
+    try {
+      const res = await API.put(`/projects/${id}/members/${userId}/role`, { role });
+      setProject(res.data);
+      loadActivity();
+    } catch (err) {
+      setError(err.response?.data?.message || "Failed to update role");
+    }
+  };
+
   // --- Drag-and-drop handlers ---
   const onDragStart = (e, taskId) => {
     dragTaskId.current = taskId;
@@ -239,7 +252,7 @@ export default function Project() {
       {/* Task creation modal */}
       {showModal && (
         <TaskModal
-          members={project.members}
+          members={project.members.map((m) => m.user)}
           onClose={() => setShowModal(false)}
           onSave={createTask}
         />
@@ -346,32 +359,42 @@ export default function Project() {
 
             <ul className="space-y-3 mb-5">
               {project.members.map((m) => (
-                <li key={m._id} className="flex items-center justify-between">
+                <li key={m.user._id} className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
                     {/* Member avatar initial */}
                     <div className="w-9 h-9 rounded-full bg-blue-500 flex items-center justify-center text-white font-bold">
-                      {m.name?.[0]?.toUpperCase()}
+                      {m.user.name?.[0]?.toUpperCase()}
                     </div>
                     <div>
-                      <p className="text-sm font-medium text-gray-800">{m.name}</p>
-                      <p className="text-xs text-gray-400">{m.email}</p>
+                      <p className="text-sm font-medium text-gray-800">{m.user.name}</p>
+                      <p className="text-xs text-gray-400">{m.user.email}</p>
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
-                    {/* Admin badge for project creator */}
-                    {String(m._id) === String(project.createdBy?._id) && (
-                      <span className="text-xs bg-blue-50 text-blue-600 border border-blue-100 px-2 py-0.5 rounded-full font-medium">
-                        Admin
-                      </span>
-                    )}
-                    {/* Remove button — admin only, not for themselves */}
-                    {isAdmin && String(m._id) !== String(project.createdBy?._id) && (
-                      <button
-                        onClick={() => removeMember(m._id)}
-                        className="text-xs text-red-400 hover:text-red-600 border border-red-200 hover:border-red-400 px-2 py-0.5 rounded transition-colors"
-                      >
-                        Remove
-                      </button>
+                    {/* Role badge */}
+                    <span className={`text-xs px-2 py-0.5 rounded-full font-medium border ${
+                      m.role === "admin"
+                        ? "bg-blue-50 text-blue-600 border-blue-100"
+                        : "bg-gray-50 text-gray-500 border-gray-200"
+                    }`}>
+                      {m.role === "admin" ? "Admin" : "Member"}
+                    </span>
+                    {/* Role toggle + remove — admin only, not for the creator */}
+                    {isAdmin && String(m.user._id) !== String(project.createdBy?._id) && (
+                      <>
+                        <button
+                          onClick={() => updateRole(m.user._id, m.role === "admin" ? "member" : "admin")}
+                          className="text-xs text-indigo-400 hover:text-indigo-600 border border-indigo-200 hover:border-indigo-400 px-2 py-0.5 rounded transition-colors"
+                        >
+                          Make {m.role === "admin" ? "Member" : "Admin"}
+                        </button>
+                        <button
+                          onClick={() => removeMember(m.user._id)}
+                          className="text-xs text-red-400 hover:text-red-600 border border-red-200 hover:border-red-400 px-2 py-0.5 rounded transition-colors"
+                        >
+                          Remove
+                        </button>
+                      </>
                     )}
                   </div>
                 </li>
