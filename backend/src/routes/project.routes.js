@@ -1,7 +1,7 @@
 
 const router = require("express").Router();
 const auth = require("../middleware/auth.middleware");
-const { createProject, getProjects, getProject, addMember, removeMember } = require("../controllers/project.controller");
+const { createProject, getProjects, getProject, addMember, removeMember, updateMemberRole } = require("../controllers/project.controller");
 
 router.use(auth);
 
@@ -10,5 +10,6 @@ router.get("/", getProjects);
 router.get("/:id", getProject);
 router.post("/:id/members", addMember);
 router.delete("/:id/members/:userId", removeMember);
+router.put("/:id/members/:userId/role", updateMemberRole);
 
 module.exports = router;

@@ -23,8 +23,9 @@ exports.createTask = async (req, res, next) => {
     const project = await Project.findById(req.body.project);
     if (!project) return res.status(404).json({ message: "Project not found" });
 
-    // Only the project creator (admin) can create tasks
-    if (String(project.createdBy) !== req.user.id)
+    // Only admin can create tasks
+    const isAdmin = project.members.some((m) => String(m.user) === req.user.id && m.role === "admin");
+    if (!isAdmin)
       return res.status(403).json({ message: "Only admin can create tasks" });
 
     // Remove empty assignedTo so Mongoose doesn't store an empty string
@@ -53,7 +54,7 @@ exports.getTasks = async (req, res, next) => {
     const project = await Project.findById(req.params.projectId);
     if (!project) return res.status(404).json({ message: "Project not found" });
 
-    const isMember = project.members.some((m) => String(m) === req.user.id);
+    const isMember = project.members.some((m) => String(m.user) === req.user.id);
     if (!isMember) return res.status(403).json({ message: "Not a member" });
 
     const tasks = await Task.find({ project: req.params.projectId })
@@ -74,8 +75,8 @@ exports.updateTask = async (req, res, next) => {
     if (!task) return res.status(404).json({ message: "Task not found" });
 
     const project = await Project.findById(task.project);
-    const isAdmin    = String(project.createdBy) === req.user.id;
-    const isAssigned = String(task.assignedTo)   === req.user.id;
+    const isAdmin    = project.members.some((m) => String(m.user) === req.user.id && m.role === "admin");
+    const isAssigned = task.assignedTo && String(task.assignedTo._id || task.assignedTo) === req.user.id;
 
     if (!isAdmin && !isAssigned)
       return res.status(403).json({ message: "Not authorized to update this task" });
@@ -108,7 +109,8 @@ exports.deleteTask = async (req, res, next) => {
     if (!task) return res.status(404).json({ message: "Task not found" });
 
     const project = await Project.findById(task.project);
-    if (String(project.createdBy) !== req.user.id)
+    const isAdmin = project.members.some((m) => String(m.user) === req.user.id && m.role === "admin");
+    if (!isAdmin)
       return res.status(403).json({ message: "Only admin can delete tasks" });
 
     await Task.findByIdAndDelete(req.params.id);
@@ -130,7 +132,7 @@ exports.deleteTask = async (req, res, next) => {
 exports.getDashboard = async (req, res, next) => {
   try {
     // Find all projects the user is a member of
-    const projects   = await Project.find({ members: req.user.id });
+    const projects   = await Project.find({ "members.user": req.user.id });
     const projectIds = projects.map((p) => p._id);
 
     const tasks = await Task.find({ project: { $in: projectIds } }).populate("assignedTo", "name");

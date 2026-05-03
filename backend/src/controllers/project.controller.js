@@ -3,14 +3,18 @@ const User = require("../models/user.model");
 const Activity = require("../models/activity.model");
 const Joi = require("joi");
 
-// Validation schema for project creation
 const projectSchema = Joi.object({
   name:        Joi.string().min(2).max(100).required(),
   description: Joi.string().max(500).allow("").optional(),
 });
 
+const populate = (q) =>
+  q.populate("members.user", "name email").populate("createdBy", "name email");
+
+const isAdmin = (project, userId) =>
+  project.members.some((m) => String(m.user._id || m.user) === userId && m.role === "admin");
+
 // POST /api/projects
-// Creates a project; the creator is automatically added as the first member
 exports.createProject = async (req, res, next) => {
   try {
     const { error } = projectSchema.validate(req.body);
@@ -20,52 +24,38 @@ exports.createProject = async (req, res, next) => {
       name:        req.body.name,
       description: req.body.description,
       createdBy:   req.user.id,
-      members:     [req.user.id], // creator is always a member
+      members:     [{ user: req.user.id, role: "admin" }],
     });
 
     await Activity.create({ project: project._id, user: req.user.id, action: "created the project" });
     res.status(201).json(project);
-  } catch (err) {
-    next(err);
-  }
+  } catch (err) { next(err); }
 };
 
 // GET /api/projects
-// Returns all projects the current user is a member of
 exports.getProjects = async (req, res, next) => {
   try {
-    const projects = await Project.find({ members: req.user.id })
-      .populate("members",   "name email")
-      .populate("createdBy", "name email")
-      .sort({ createdAt: -1 });
+    const projects = await populate(
+      Project.find({ "members.user": req.user.id })
+    ).sort({ createdAt: -1 });
     res.json(projects);
-  } catch (err) {
-    next(err);
-  }
+  } catch (err) { next(err); }
 };
 
 // GET /api/projects/:id
-// Returns a single project; only accessible to members
 exports.getProject = async (req, res, next) => {
   try {
-    const project = await Project.findById(req.params.id)
-      .populate("members",   "name email")
-      .populate("createdBy", "name email");
-
+    const project = await populate(Project.findById(req.params.id));
     if (!project) return res.status(404).json({ message: "Project not found" });
 
-    // Verify the requester is a member before returning data
-    const isMember = project.members.some((m) => String(m._id) === req.user.id);
+    const isMember = project.members.some((m) => String(m.user._id) === req.user.id);
     if (!isMember) return res.status(403).json({ message: "Access denied" });
 
     res.json(project);
-  } catch (err) {
-    next(err);
-  }
+  } catch (err) { next(err); }
 };
 
 // POST /api/projects/:id/members
-// Adds a user (looked up by email) to the project; admin only
 exports.addMember = async (req, res, next) => {
   try {
     const { email } = req.body;
@@ -73,65 +63,66 @@ exports.addMember = async (req, res, next) => {
 
     const project = await Project.findById(req.params.id);
     if (!project) return res.status(404).json({ message: "Project not found" });
-
-    // Only the project creator (admin) can add members
-    if (String(project.createdBy) !== req.user.id)
+    if (!isAdmin(project, req.user.id))
       return res.status(403).json({ message: "Only admin can add members" });
 
     const user = await User.findOne({ email });
     if (!user) return res.status(404).json({ message: "No user found with that email" });
-
-    // Prevent adding someone who is already a member
-    if (project.members.map(String).includes(String(user._id)))
+    if (project.members.some((m) => String(m.user) === String(user._id)))
       return res.status(400).json({ message: "Already a member" });
 
-    project.members.push(user._id);
+    project.members.push({ user: user._id, role: "member" });
     await project.save();
 
-    await Activity.create({
-      project: project._id,
-      user:    req.user.id,
-      action:  `added ${user.name} as a member`,
-    });
-
-    // Return the updated project with populated fields
-    await project.populate("members",   "name email");
-    await project.populate("createdBy", "name email");
-    res.json(project);
-  } catch (err) {
-    next(err);
-  }
+    await Activity.create({ project: project._id, user: req.user.id, action: `added ${user.name} as a member` });
+    res.json(await populate(Project.findById(project._id)));
+  } catch (err) { next(err); }
 };
 
 // DELETE /api/projects/:id/members/:userId
-// Removes a member from the project; admin only, cannot remove themselves
 exports.removeMember = async (req, res, next) => {
   try {
     const project = await Project.findById(req.params.id);
     if (!project) return res.status(404).json({ message: "Project not found" });
-
-    if (String(project.createdBy) !== req.user.id)
+    if (!isAdmin(project, req.user.id))
       return res.status(403).json({ message: "Only admin can remove members" });
-
-    // Prevent the admin from removing themselves
     if (String(project.createdBy) === req.params.userId)
-      return res.status(400).json({ message: "Cannot remove the project admin" });
+      return res.status(400).json({ message: "Cannot remove the project creator" });
 
     const removedUser = await User.findById(req.params.userId);
-    project.members = project.members.filter((m) => String(m) !== req.params.userId);
+    project.members = project.members.filter((m) => String(m.user) !== req.params.userId);
     await project.save();
 
     if (removedUser)
-      await Activity.create({
-        project: project._id,
-        user:    req.user.id,
-        action:  `removed ${removedUser.name} from the project`,
-      });
+      await Activity.create({ project: project._id, user: req.user.id, action: `removed ${removedUser.name} from the project` });
 
-    await project.populate("members",   "name email");
-    await project.populate("createdBy", "name email");
-    res.json(project);
-  } catch (err) {
-    next(err);
-  }
+    res.json(await populate(Project.findById(project._id)));
+  } catch (err) { next(err); }
+};
+
+// PUT /api/projects/:id/members/:userId/role
+exports.updateMemberRole = async (req, res, next) => {
+  try {
+    const { role } = req.body;
+    if (!["admin", "member"].includes(role))
+      return res.status(400).json({ message: "Role must be admin or member" });
+
+    const project = await Project.findById(req.params.id);
+    if (!project) return res.status(404).json({ message: "Project not found" });
+    if (!isAdmin(project, req.user.id))
+      return res.status(403).json({ message: "Only admin can change roles" });
+    if (String(project.createdBy) === req.params.userId && role === "member")
+      return res.status(400).json({ message: "Cannot demote the project creator" });
+
+    const entry = project.members.find((m) => String(m.user) === req.params.userId);
+    if (!entry) return res.status(404).json({ message: "Member not found" });
+
+    entry.role = role;
+    await project.save();
+
+    const target = await User.findById(req.params.userId);
+    await Activity.create({ project: project._id, user: req.user.id, action: `changed ${target?.name}'s role to ${role}` });
+
+    res.json(await populate(Project.findById(project._id)));
+  } catch (err) { next(err); }
 };

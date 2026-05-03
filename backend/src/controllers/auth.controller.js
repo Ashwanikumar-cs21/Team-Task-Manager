@@ -8,6 +8,7 @@ const signupSchema = Joi.object({
   name:     Joi.string().min(2).max(50).required(),
   email:    Joi.string().email().required(),
   password: Joi.string().min(6).required(),
+  role:     Joi.string().valid("admin", "member").default("member"),
 });
 
 const loginSchema = Joi.object({
@@ -30,9 +31,10 @@ exports.signup = async (req, res, next) => {
     // Hash password with cost factor 12 before storing
     const hashed = await bcrypt.hash(req.body.password, 12);
     const user = await User.create({
-      name: req.body.name,
-      email: req.body.email,
+      name:     req.body.name,
+      email:    req.body.email,
       password: hashed,
+      role:     req.body.role || "member",
     });
 
     res.status(201).json({ user, token: generateToken(user) });

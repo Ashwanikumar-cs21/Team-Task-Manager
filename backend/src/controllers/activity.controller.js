@@ -10,7 +10,7 @@ exports.getActivity = async (req, res, next) => {
     if (!project) return res.status(404).json({ message: "Project not found" });
 
     // Verify the requester is a member of this project
-    const isMember = project.members.some((m) => String(m) === req.user.id);
+    const isMember = project.members.some((m) => String(m.user) === req.user.id);
     if (!isMember) return res.status(403).json({ message: "Access denied" });
 
     const logs = await Activity.find({ project: req.params.projectId })
