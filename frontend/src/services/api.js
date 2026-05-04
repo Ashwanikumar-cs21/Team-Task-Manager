@@ -1,8 +1,8 @@
 import axios from "axios";
 
-const BASE_URL =
-  import.meta.env.VITE_API_URL ||
-  "https://team-task-manager-production-ef9c.up.railway.app/api"; // ✅ FIX
+const raw = import.meta.env.VITE_API_URL || "https://team-task-manager-production-ef9c.up.railway.app";
+// Ensure baseURL always ends with /api
+const BASE_URL = raw.endsWith("/api") ? raw : `${raw.replace(/\/$/, "")}/api`;
 
 const API = axios.create({
   baseURL: BASE_URL,
