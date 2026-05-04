@@ -100,7 +100,7 @@ export default function Project() {
   const dragTaskId = useRef(null);
 
   const isAdmin = project?.members?.some(
-    (m) => String(m.user?._id) === user?._id && m.role === "admin"
+    (m) => String(m.user?._id || m.user || m) === user?._id && (m.role === "admin" || (!m.role && String(project.createdBy?._id) === user?._id))
   );
 
   // ✅ FIXED API CALLS
@@ -209,7 +209,9 @@ export default function Project() {
 
       {showModal && (
         <TaskModal
-          members={project.members.map((m) => m.user)}
+        members={project.members
+            .map((m) => m.user || m)
+            .filter((m) => m && m._id)}
           onClose={() => setShowModal(false)}
           onSave={createTask}
         />
