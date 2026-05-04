@@ -3,110 +3,150 @@ import { useNavigate, Link } from "react-router-dom";
 import API from "../services/api";
 
 export default function Signup() {
-  // Form state for name, email, and password
-  const [form, setForm] = useState({ name: "", email: "", password: "", role: "member" });
+  const [form, setForm] = useState({
+    name: "",
+    email: "",
+    password: "",
+    role: "member",
+  });
+
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+
   const navigate = useNavigate();
 
-  // Submit handler: registers user then redirects to login
   const handle = async (e) => {
     e.preventDefault();
     setLoading(true);
     setError("");
+
     try {
-  const res = await api.post("/api/auth/signup", formData);
-  console.log(res.data);
-} catch (err) {
-  console.log("FULL ERROR:", err); // 👈 add this
-  alert(err.response?.data?.message || "Signup failed");
-}
+      console.log("Sending data:", form);
+
+      // ✅ IMPORTANT: correct route
+      const res = await API.post("/api/auth/signup", form);
+
+      console.log("Response:", res.data);
+
+      navigate("/login");
+    } catch (err) {
+      console.log("FULL ERROR:", err);
+
+      const message =
+        err.response?.data?.message ||
+        err.message ||
+        "Signup failed";
+
+      setError(message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
     <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4">
       <div className="bg-white rounded-xl shadow w-full max-w-sm">
 
-        {/* Card header */}
+        {/* Header */}
         <div className="bg-blue-700 px-8 py-6 rounded-t-xl">
           <h1 className="text-xl font-bold text-white">Create account</h1>
-          <p className="text-blue-200 text-sm mt-1">Start managing your team's tasks</p>
+          <p className="text-blue-200 text-sm mt-1">
+            Start managing your team's tasks
+          </p>
         </div>
 
-        {/* Signup form */}
+        {/* Form */}
         <div className="px-8 py-6">
           <form onSubmit={handle} className="space-y-4">
 
-            {/* Full name input */}
+            {/* Name */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Full Name
+              </label>
               <input
-                className="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                value={form.name}
+                onChange={(e) =>
+                  setForm({ ...form, name: e.target.value })
+                }
+                className="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm"
                 placeholder="John Doe"
                 required
-                onChange={(e) => setForm({ ...form, name: e.target.value })}
               />
             </div>
 
-            {/* Email input */}
+            {/* Email */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Email
+              </label>
               <input
-                className="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder="you@example.com"
                 type="email"
+                value={form.email}
+                onChange={(e) =>
+                  setForm({ ...form, email: e.target.value })
+                }
+                className="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm"
+                placeholder="you@example.com"
                 required
-                onChange={(e) => setForm({ ...form, email: e.target.value })}
               />
             </div>
 
-            {/* Password input */}
+            {/* Password */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Password
+              </label>
               <input
-                className="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder="Min. 6 characters"
                 type="password"
+                value={form.password}
+                onChange={(e) =>
+                  setForm({ ...form, password: e.target.value })
+                }
+                className="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm"
+                placeholder="Min. 6 characters"
                 required
-                onChange={(e) => setForm({ ...form, password: e.target.value })}
               />
             </div>
 
-            {/* Role selector */}
+            {/* Role */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Role</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Role
+              </label>
               <select
-                className="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
                 value={form.role}
-                onChange={(e) => setForm({ ...form, role: e.target.value })}
+                onChange={(e) =>
+                  setForm({ ...form, role: e.target.value })
+                }
+                className="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm bg-white"
               >
                 <option value="member">Member</option>
                 <option value="admin">Admin</option>
               </select>
             </div>
 
-
-
-            {/* Inline error message */}
+            {/* Error */}
             {error && (
               <div className="bg-red-50 border border-red-200 text-red-600 text-sm rounded-lg px-4 py-2.5">
                 {error}
               </div>
             )}
 
+            {/* Button */}
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-blue-600 text-white py-2.5 rounded-lg hover:bg-blue-700 disabled:opacity-60 font-medium text-sm transition-colors"
+              className="w-full bg-blue-600 text-white py-2.5 rounded-lg hover:bg-blue-700 disabled:opacity-60"
             >
               {loading ? "Creating account..." : "Create Account"}
             </button>
           </form>
 
-          {/* Link back to login */}
+          {/* Login link */}
           <p className="text-center text-sm text-gray-500 mt-5">
             Already have an account?{" "}
-            <Link to="/login" className="text-blue-600 font-medium hover:underline">
+            <Link to="/login" className="text-blue-600 hover:underline">
               Sign in
             </Link>
           </p>
