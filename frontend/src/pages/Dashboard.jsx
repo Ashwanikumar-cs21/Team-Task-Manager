@@ -4,24 +4,28 @@ import Navbar from "../components/Navbar";
 import { useAuth } from "../context/AuthContext";
 import API from "../services/api";
 
-// Badge color maps for priority and status labels
 const priorityColor = {
   low: "bg-green-100 text-green-700",
   medium: "bg-yellow-100 text-yellow-700",
   high: "bg-red-100 text-red-700",
 };
+
 const statusColor = {
   todo: "bg-gray-100 text-gray-600",
   inprogress: "bg-blue-100 text-blue-700",
   done: "bg-green-100 text-green-700",
 };
-const statusLabel = { todo: "To Do", inprogress: "In Progress", done: "Done" };
 
-// Simple stat card: shows a numeric value with a label
+const statusLabel = {
+  todo: "To Do",
+  inprogress: "In Progress",
+  done: "Done",
+};
+
 function StatCard({ label, value }) {
   return (
-    <div className="bg-white rounded-xl border border-gray-200 p-5">
-      <p className="text-2xl font-bold text-gray-800">{value}</p>
+    <div className="bg-white rounded-xl border p-5">
+      <p className="text-2xl font-bold">{value}</p>
       <p className="text-sm text-gray-500 mt-1">{label}</p>
     </div>
   );
@@ -33,25 +37,43 @@ export default function Dashboard() {
   const { user } = useAuth();
   const navigate = useNavigate();
 
-  // Fetch dashboard stats on mount
   useEffect(() => {
-    API.get("/tasks/dashboard")
-      .then((res) => setStats(res.data))
-      .catch(() => setError("Failed to load dashboard"));
+    const fetchDashboard = async () => {
+      try {
+        // ✅ FIX: correct API route
+        const res = await API.get("/api/tasks/dashboard");
+
+        console.log("DASHBOARD DATA:", res.data);
+
+        setStats(res.data);
+      } catch (err) {
+        console.log("DASHBOARD ERROR:", err.response || err.message);
+
+        // 🔥 better error message
+        if (err.response?.status === 401) {
+          setError("Unauthorized - Please login again");
+        } else {
+          setError("Failed to load dashboard");
+        }
+      }
+    };
+
+    fetchDashboard();
   }, []);
 
-  // Calculate overall completion percentage
   const completionPct =
-    stats && stats.total > 0 ? Math.round((stats.done / stats.total) * 100) : 0;
+    stats && stats.total > 0
+      ? Math.round((stats.done / stats.total) * 100)
+      : 0;
 
   return (
     <div className="min-h-screen bg-gray-50">
       <Navbar />
+
       <div className="max-w-5xl mx-auto px-4 py-8">
 
-        {/* Page heading */}
         <div className="mb-6">
-          <h1 className="text-xl font-bold text-gray-800">
+          <h1 className="text-xl font-bold">
             Welcome, {user?.name?.split(" ")[0]}
           </h1>
           <p className="text-gray-500 text-sm mt-1">
@@ -59,128 +81,62 @@ export default function Dashboard() {
           </p>
         </div>
 
-        {/* Error banner */}
         {error && (
-          <div className="bg-red-50 border border-red-200 text-red-600 rounded-lg px-4 py-3 mb-6 text-sm">
+          <div className="bg-red-50 border text-red-600 rounded-lg px-4 py-3 mb-6 text-sm">
             {error}
           </div>
         )}
 
-        {/* Loading spinner while stats are fetched */}
         {!stats ? (
-          <div className="flex items-center justify-center py-20">
+          <div className="flex justify-center py-20">
             <div className="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin" />
           </div>
         ) : (
           <>
-            {/* Summary stat cards */}
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-              <StatCard label="Total Tasks"  value={stats.total} />
-              <StatCard label="To Do"        value={stats.todo} />
-              <StatCard label="In Progress"  value={stats.inprogress} />
-              <StatCard label="Completed"    value={stats.done} />
+              <StatCard label="Total Tasks" value={stats.total} />
+              <StatCard label="To Do" value={stats.todo} />
+              <StatCard label="In Progress" value={stats.inprogress} />
+              <StatCard label="Completed" value={stats.done} />
             </div>
 
-            {/* Overdue warning banner — only shown when overdue tasks exist */}
             {stats.overdue > 0 && (
-              <div className="bg-red-50 border border-red-200 rounded-lg px-5 py-4 mb-6 flex items-center justify-between">
+              <div className="bg-red-50 border rounded-lg px-5 py-4 mb-6 flex justify-between">
                 <div>
                   <p className="text-red-700 font-semibold text-sm">
-                    {stats.overdue} overdue task{stats.overdue > 1 ? "s" : ""}
-                  </p>
-                  <p className="text-red-500 text-xs mt-0.5">
-                    These tasks are past their due date and not yet completed.
+                    {stats.overdue} overdue task
+                    {stats.overdue > 1 ? "s" : ""}
                   </p>
                 </div>
                 <button
                   onClick={() => navigate("/projects")}
-                  className="text-xs text-red-600 font-medium hover:underline ml-4"
+                  className="text-red-600 text-xs hover:underline"
                 >
                   View Projects
                 </button>
               </div>
             )}
 
-            {/* Overall completion progress bar */}
-            <div className="bg-white rounded-xl border border-gray-200 p-5 mb-6">
-              <div className="flex items-center justify-between mb-2">
-                <p className="text-sm font-semibold text-gray-700">Overall Completion</p>
-                <p className="text-sm font-bold text-blue-600">{completionPct}%</p>
+            <div className="bg-white rounded-xl border p-5 mb-6">
+              <div className="flex justify-between mb-2">
+                <p className="text-sm font-semibold">Overall Completion</p>
+                <p className="text-sm font-bold text-blue-600">
+                  {completionPct}%
+                </p>
               </div>
+
               <div className="w-full bg-gray-100 rounded-full h-2.5">
                 <div
-                  className="bg-blue-600 h-2.5 rounded-full transition-all duration-500"
+                  className="bg-blue-600 h-2.5 rounded-full"
                   style={{ width: `${completionPct}%` }}
                 />
               </div>
-              <div className="flex justify-between text-xs text-gray-400 mt-1">
-                <span>{stats.done} done</span>
-                <span>{stats.total - stats.done} remaining</span>
-              </div>
             </div>
 
-            <div className="grid md:grid-cols-2 gap-6">
-              {/* Tasks per member — bar chart using relative widths */}
-              <div className="bg-white rounded-xl border border-gray-200 p-5">
-                <h2 className="font-semibold text-gray-700 mb-4">Tasks per Member</h2>
-                {Object.keys(stats.byUser).length === 0 ? (
-                  <p className="text-gray-400 text-sm text-center py-6">No assignments yet</p>
-                ) : (
-                  <ul className="space-y-3">
-                    {Object.entries(stats.byUser)
-                      .sort((a, b) => b[1] - a[1])
-                      .map(([name, count]) => {
-                        const max = Math.max(...Object.values(stats.byUser));
-                        return (
-                          <li key={name}>
-                            <div className="flex justify-between text-sm mb-1">
-                              <span className="text-gray-700">{name}</span>
-                              <span className="text-blue-600 font-semibold">{count}</span>
-                            </div>
-                            {/* Bar width is proportional to the member with the most tasks */}
-                            <div className="w-full bg-gray-100 rounded-full h-1.5">
-                              <div
-                                className="bg-blue-500 h-1.5 rounded-full"
-                                style={{ width: `${(count / max) * 100}%` }}
-                              />
-                            </div>
-                          </li>
-                        );
-                      })}
-                  </ul>
-                )}
-              </div>
-
-              {/* Five most recently created tasks */}
-              <div className="bg-white rounded-xl border border-gray-200 p-5">
-                <h2 className="font-semibold text-gray-700 mb-4">Recent Tasks</h2>
-                {stats.recentTasks.length === 0 ? (
-                  <p className="text-gray-400 text-sm text-center py-6">No tasks yet</p>
-                ) : (
-                  <ul className="space-y-3">
-                    {stats.recentTasks.map((t) => (
-                      <li key={t._id} className="flex items-center justify-between gap-2">
-                        <span className="text-sm text-gray-700 truncate">{t.title}</span>
-                        <div className="flex gap-1.5 shrink-0">
-                          <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${priorityColor[t.priority]}`}>
-                            {t.priority}
-                          </span>
-                          <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${statusColor[t.status]}`}>
-                            {statusLabel[t.status]}
-                          </span>
-                        </div>
-                      </li>
-                    ))}
-                  </ul>
-                )}
-              </div>
-            </div>
-
-            {/* Navigate to projects list */}
             <div className="mt-6 flex justify-center">
               <button
                 onClick={() => navigate("/projects")}
-                className="bg-blue-600 text-white px-8 py-2.5 rounded-lg hover:bg-blue-700 font-medium text-sm transition-colors"
+                className="bg-blue-600 text-white px-8 py-2.5 rounded-lg hover:bg-blue-700"
               >
                 Go to Projects
               </button>
