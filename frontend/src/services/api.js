@@ -1,9 +1,9 @@
 import axios from "axios";
 
-// ✅ Fallback added (important for safety)
+// ✅ FIX: base URL + /api add kiya
 const BASE_URL =
-  import.meta.env.VITE_API_URL ||
-  "https://team-task-manager-production-ef9c.up.railway.app";
+  (import.meta.env.VITE_API_URL ||
+    "https://team-task-manager-production-ef9c.up.railway.app") + "/api";
 
 // Create Axios instance
 const API = axios.create({
@@ -25,7 +25,7 @@ API.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
-// Optional: response interceptor (debugging 🔥)
+// Debugging interceptor 🔥
 API.interceptors.response.use(
   (response) => response,
   (error) => {
