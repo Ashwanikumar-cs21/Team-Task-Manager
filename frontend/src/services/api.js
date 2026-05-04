@@ -1,7 +1,9 @@
 import axios from "axios";
 
 // Base Axios instance pointing at the backend API
-const API = import.meta.env.VITE_API_URL;
+const API = axios.create({
+  baseURL: import.meta.env.VITE_API_URL
+});
 
 // Attach the JWT token to every outgoing request if one is stored
 API.interceptors.request.use((req) => {
