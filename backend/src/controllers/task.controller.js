@@ -76,12 +76,12 @@ exports.updateTask = async (req, res, next) => {
 
     const project = await Project.findById(task.project);
     const isAdmin    = project.members.some((m) => String(m.user?._id || m.user || m) === req.user.id && (m.role === "admin" || (!m.role && String(project.createdBy) === req.user.id)));
-    const isAssigned = task.assignedTo && String(task.assignedTo._id || task.assignedTo) === req.user.id;
+    const isMember   = project.members.some((m) => String(m.user?._id || m.user || m) === req.user.id);
 
-    if (!isAdmin && !isAssigned)
+    if (!isMember)
       return res.status(403).json({ message: "Not authorized to update this task" });
 
-    // Restrict non-admin users to status changes only
+    // Admin can update any field, members can only update status
     const updates = isAdmin ? req.body : { status: req.body.status };
 
     const updated = await Task.findByIdAndUpdate(req.params.id, updates, {
