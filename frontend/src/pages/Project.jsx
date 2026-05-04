@@ -7,11 +7,7 @@ import API from "../services/api";
 
 const STATUSES = ["todo", "inprogress", "done"];
 
-const STATUS_LABEL = {
-  todo: "To Do",
-  inprogress: "In Progress",
-  done: "Done",
-};
+const STATUS_LABEL = { todo: "To Do", inprogress: "In Progress", done: "Done" };
 
 const STATUS_COLUMN = {
   todo: "bg-gray-50 border-gray-200",
@@ -41,11 +37,11 @@ function TaskCard({ task, isAdmin, isAssigned, onStatusChange, onDelete, onDragS
     <div
       draggable={canEdit}
       onDragStart={(e) => onDragStart(e, task._id)}
-      className={`bg-white rounded-lg border p-3.5 shadow-sm cursor-grab ${
+      className={`bg-white rounded-lg border p-3.5 shadow-sm cursor-grab active:cursor-grabbing hover:shadow-md ${
         isOverdue ? "border-red-300" : "border-gray-200"
       }`}
     >
-      <div className="flex justify-between mb-2">
+      <div className="flex items-start justify-between mb-2">
         <p className="font-medium text-sm">{task.title}</p>
         <span className={`text-xs px-2 py-0.5 rounded ${PRIORITY_COLOR[task.priority]}`}>
           {task.priority}
@@ -53,24 +49,24 @@ function TaskCard({ task, isAdmin, isAssigned, onStatusChange, onDelete, onDragS
       </div>
 
       {task.description && (
-        <p className="text-xs text-gray-500 mb-2">{task.description}</p>
+        <p className="text-xs text-gray-500 mb-2 line-clamp-2">{task.description}</p>
       )}
 
-      <div className="flex justify-between text-xs">
+      <div className="flex justify-between mt-2 text-xs">
         {task.assignedTo && <span>{task.assignedTo.name}</span>}
         {task.dueDate && (
-          <span className={isOverdue ? "text-red-500" : "text-gray-400"}>
+          <span className={isOverdue ? "text-red-500 font-semibold" : "text-gray-400"}>
             {new Date(task.dueDate).toLocaleDateString()}
           </span>
         )}
       </div>
 
       {canEdit && (
-        <div className="flex gap-2 mt-2">
+        <div className="flex items-center gap-2 mt-3 pt-2 border-t">
           <select
             value={task.status}
             onChange={(e) => onStatusChange(task._id, e.target.value)}
-            className="text-xs border px-2 py-1"
+            className="flex-1 text-xs border rounded px-2 py-1"
           >
             {STATUSES.map((s) => (
               <option key={s} value={s}>
@@ -99,6 +95,7 @@ export default function Project() {
   const [tasks, setTasks] = useState([]);
   const [activity, setActivity] = useState([]);
   const [showModal, setShowModal] = useState(false);
+  const [error, setError] = useState("");
 
   const dragTaskId = useRef(null);
 
@@ -123,8 +120,13 @@ export default function Project() {
   }, [id]);
 
   const createTask = async (form) => {
-    await API.post("/api/tasks", { ...form, project: id });
-    loadTasks();
+    try {
+      await API.post("/api/tasks", { ...form, project: id });
+      setShowModal(false);
+      loadTasks();
+    } catch {
+      setError("Failed to create task");
+    }
   };
 
   const updateStatus = async (taskId, status) => {
@@ -146,37 +148,63 @@ export default function Project() {
     updateStatus(dragTaskId.current, status);
   };
 
-  if (!project) return <div>Loading...</div>;
+  if (!project)
+    return (
+      <div className="min-h-screen bg-gray-50">
+        <Navbar />
+        <div className="flex justify-center py-20">
+          <div className="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin" />
+        </div>
+      </div>
+    );
 
   const grouped = { todo: [], inprogress: [], done: [] };
   tasks.forEach((t) => grouped[t.status]?.push(t));
 
   return (
-    <div>
+    <div className="min-h-screen bg-gray-50">
       <Navbar />
 
-      <h1>{project.name}</h1>
+      <div className="max-w-7xl mx-auto px-4 py-6">
+        <h1 className="text-xl font-bold mb-4">{project.name}</h1>
 
-      {isAdmin && <button onClick={() => setShowModal(true)}>Add Task</button>}
+        {error && <p className="text-red-500">{error}</p>}
 
-      <div className="grid grid-cols-3 gap-4">
-        {STATUSES.map((status) => (
-          <div key={status} onDrop={(e) => onDrop(e, status)} onDragOver={(e) => e.preventDefault()}>
-            <h2>{STATUS_LABEL[status]}</h2>
+        {isAdmin && (
+          <button
+            onClick={() => setShowModal(true)}
+            className="bg-blue-600 text-white px-4 py-2 rounded mb-4"
+          >
+            + Add Task
+          </button>
+        )}
 
-            {grouped[status].map((task) => (
-              <TaskCard
-                key={task._id}
-                task={task}
-                isAdmin={isAdmin}
-                isAssigned={String(task.assignedTo?._id) === user?._id}
-                onStatusChange={updateStatus}
-                onDelete={deleteTask}
-                onDragStart={onDragStart}
-              />
-            ))}
-          </div>
-        ))}
+        <div className="grid md:grid-cols-3 gap-4">
+          {STATUSES.map((status) => (
+            <div
+              key={status}
+              onDrop={(e) => onDrop(e, status)}
+              onDragOver={(e) => e.preventDefault()}
+              className={`rounded-xl border-2 border-dashed ${STATUS_COLUMN[status]}`}
+            >
+              <div className="p-3 font-semibold">{STATUS_LABEL[status]}</div>
+
+              <div className="p-3 space-y-3">
+                {grouped[status].map((task) => (
+                  <TaskCard
+                    key={task._id}
+                    task={task}
+                    isAdmin={isAdmin}
+                    isAssigned={String(task.assignedTo?._id) === user?._id}
+                    onStatusChange={updateStatus}
+                    onDelete={deleteTask}
+                    onDragStart={onDragStart}
+                  />
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
 
       {showModal && (
