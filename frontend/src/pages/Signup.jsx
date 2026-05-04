@@ -24,7 +24,7 @@ export default function Signup() {
       console.log("Sending data:", form);
 
       // ✅ IMPORTANT: correct route
-      const res = await API.post("/api/auth/signup", form);
+      const res = await API.post("/auth/signup", form);
 
       console.log("Response:", res.data);
 

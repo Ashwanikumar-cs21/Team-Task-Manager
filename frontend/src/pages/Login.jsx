@@ -20,7 +20,7 @@ export default function Login() {
       console.log("Sending login:", form);
 
       // ✅ FIX: correct route
-      const res = await API.post("/api/auth/login", form);
+      const res = await API.post("/auth/login", form);
 
       console.log("LOGIN RESPONSE:", res.data);
 
