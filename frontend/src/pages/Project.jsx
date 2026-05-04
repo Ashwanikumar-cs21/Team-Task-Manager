@@ -28,7 +28,7 @@ const getMemberId = (m) => {
 const getMemberRole = (m, project) =>
   m.role || (getMemberId(m) === String(project?.createdBy?._id) ? "admin" : "member");
 
-function TaskCard({ task, isAdmin, isAssigned, onStatusChange, onDelete, onDragStart }) {
+function TaskCard({ task, isAdmin, isAssigned, isMember, onStatusChange, onDelete, onDragStart }) {
   const canEdit = isAdmin || isAssigned;
   const isOverdue = task.dueDate && new Date(task.dueDate) < new Date() && task.status !== "done";
 
@@ -64,7 +64,7 @@ function TaskCard({ task, isAdmin, isAssigned, onStatusChange, onDelete, onDragS
         )}
       </div>
 
-      {canEdit && (
+      {(canEdit || isMember) && (
         <div className="flex items-center gap-2 mt-3 pt-2 border-t border-gray-100">
           <select
             value={task.status}
@@ -301,6 +301,7 @@ export default function Project() {
                       task={task}
                       isAdmin={isAdmin}
                       isAssigned={String(task.assignedTo?._id) === user?._id}
+                      isMember={true}
                       onStatusChange={updateStatus}
                       onDelete={deleteTask}
                       onDragStart={onDragStart}
