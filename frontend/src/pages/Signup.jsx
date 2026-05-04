@@ -15,13 +15,12 @@ export default function Signup() {
     setLoading(true);
     setError("");
     try {
-      await API.post("/auth/signup", form);
-      navigate("/login");
-    } catch (err) {
-      setError(err.response?.data?.message || "Signup failed");
-    } finally {
-      setLoading(false);
-    }
+  const res = await api.post("/api/auth/signup", formData);
+  console.log(res.data);
+} catch (err) {
+  console.log("FULL ERROR:", err); // 👈 add this
+  alert(err.response?.data?.message || "Signup failed");
+}
   };
 
   return (
