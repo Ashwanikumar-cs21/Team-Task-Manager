@@ -11,8 +11,12 @@ const projectSchema = Joi.object({
 const populate = (q) =>
   q.populate("members.user", "name email").populate("createdBy", "name email");
 
+// Works for both old flat ObjectId members and new {user, role} subdocuments
+const getMemberId = (m) => String(m.user?._id || m.user || m._id || m);
+const getMemberRole = (m) => m.role || "admin"; // old flat members default to admin (they were creators)
+
 const isAdmin = (project, userId) =>
-  project.members.some((m) => String(m.user._id || m.user) === userId && m.role === "admin");
+  project.members.some((m) => getMemberId(m) === userId && getMemberRole(m) === "admin");
 
 // POST /api/projects
 exports.createProject = async (req, res, next) => {
@@ -48,7 +52,7 @@ exports.getProject = async (req, res, next) => {
     const project = await populate(Project.findById(req.params.id));
     if (!project) return res.status(404).json({ message: "Project not found" });
 
-    const isMember = project.members.some((m) => String(m.user._id) === req.user.id);
+    const isMember = project.members.some((m) => String(m.user?._id || m.user || m) === req.user.id);
     if (!isMember) return res.status(403).json({ message: "Access denied" });
 
     res.json(project);

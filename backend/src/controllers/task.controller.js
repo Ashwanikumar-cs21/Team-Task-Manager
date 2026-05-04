@@ -24,7 +24,7 @@ exports.createTask = async (req, res, next) => {
     if (!project) return res.status(404).json({ message: "Project not found" });
 
     // Only admin can create tasks
-    const isAdmin = project.members.some((m) => String(m.user) === req.user.id && m.role === "admin");
+    const isAdmin = project.members.some((m) => String(m.user?._id || m.user || m) === req.user.id && (m.role === "admin" || (!m.role && String(project.createdBy) === req.user.id)));
     if (!isAdmin)
       return res.status(403).json({ message: "Only admin can create tasks" });
 
@@ -54,7 +54,7 @@ exports.getTasks = async (req, res, next) => {
     const project = await Project.findById(req.params.projectId);
     if (!project) return res.status(404).json({ message: "Project not found" });
 
-    const isMember = project.members.some((m) => String(m.user) === req.user.id);
+    const isMember = project.members.some((m) => String(m.user?._id || m.user || m) === req.user.id);
     if (!isMember) return res.status(403).json({ message: "Not a member" });
 
     const tasks = await Task.find({ project: req.params.projectId })
@@ -75,7 +75,7 @@ exports.updateTask = async (req, res, next) => {
     if (!task) return res.status(404).json({ message: "Task not found" });
 
     const project = await Project.findById(task.project);
-    const isAdmin    = project.members.some((m) => String(m.user) === req.user.id && m.role === "admin");
+    const isAdmin    = project.members.some((m) => String(m.user?._id || m.user || m) === req.user.id && (m.role === "admin" || (!m.role && String(project.createdBy) === req.user.id)));
     const isAssigned = task.assignedTo && String(task.assignedTo._id || task.assignedTo) === req.user.id;
 
     if (!isAdmin && !isAssigned)
@@ -109,7 +109,7 @@ exports.deleteTask = async (req, res, next) => {
     if (!task) return res.status(404).json({ message: "Task not found" });
 
     const project = await Project.findById(task.project);
-    const isAdmin = project.members.some((m) => String(m.user) === req.user.id && m.role === "admin");
+    const isAdmin = project.members.some((m) => String(m.user?._id || m.user || m) === req.user.id && (m.role === "admin" || (!m.role && String(project.createdBy) === req.user.id)));
     if (!isAdmin)
       return res.status(403).json({ message: "Only admin can delete tasks" });
 
