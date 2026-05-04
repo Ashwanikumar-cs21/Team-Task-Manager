@@ -25,7 +25,7 @@ export default function ProjectList() {
   // ✅ FIXED: correct API route + error handling
   const load = async () => {
     try {
-      const res = await API.get("/api/projects");
+      const res = await API.get("/projects");
       setProjects(res.data);
     } catch (err) {
       console.log("LOAD PROJECT ERROR:", err.response || err.message);
@@ -44,7 +44,7 @@ export default function ProjectList() {
     setError("");
 
     try {
-      await API.post("/api/projects", form);
+      await API.post("/projects", form);
 
       setShowForm(false);
       setForm({ name: "", description: "" });

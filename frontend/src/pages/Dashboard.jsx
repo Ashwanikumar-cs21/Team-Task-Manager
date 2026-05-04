@@ -41,7 +41,7 @@ export default function Dashboard() {
     const fetchDashboard = async () => {
       try {
         // ✅ FIX: correct API route
-        const res = await API.get("/api/tasks/dashboard");
+        const res = await API.get("/tasks/dashboard");
 
         console.log("DASHBOARD DATA:", res.data);
 
