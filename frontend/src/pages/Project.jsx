@@ -19,10 +19,14 @@ const PRIORITY_COLOR = {
 };
 
 // Works for both old flat ObjectId members and new {user, role} subdocuments
-const getMember = (m) => m.user?._id ? m.user : (m._id ? m : null);
-const getMemberId = (m) => String(m.user?._id || m.user || m._id || m);
+const getMemberId = (m) => {
+  if (m?.user?._id) return String(m.user._id);  // new format populated
+  if (m?.user)      return String(m.user);       // new format unpopulated
+  if (m?._id)       return String(m._id);        // old format populated
+  return String(m);                              // old format raw ObjectId
+};
 const getMemberRole = (m, project) =>
-  m.role || (String(m.user?._id || m.user || m._id || m) === String(project?.createdBy?._id) ? "admin" : "member");
+  m.role || (getMemberId(m) === String(project?.createdBy?._id) ? "admin" : "member");
 
 function TaskCard({ task, isAdmin, isAssigned, onStatusChange, onDelete, onDragStart }) {
   const canEdit = isAdmin || isAssigned;
@@ -208,8 +212,7 @@ export default function Project() {
     name:  m.user?.name  || m.name  || "Unknown",
     email: m.user?.email || m.email || "",
     role:  getMemberRole(m, project),
-    raw:   m,
-  }));
+  })).filter((m) => m.id && m.id !== "undefined");
 
   return (
     <div className="min-h-screen bg-gray-50">
