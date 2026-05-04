@@ -1,17 +1,14 @@
 import axios from "axios";
 
-// ✅ Fallback added (important for safety)
 const BASE_URL =
   import.meta.env.VITE_API_URL ||
-  "https://team-task-manager-production-ef9c.up.railway.app";
+  "https://team-task-manager-production-ef9c.up.railway.app/api"; // ✅ FIX
 
-// Create Axios instance
 const API = axios.create({
   baseURL: BASE_URL,
   withCredentials: true,
 });
 
-// Attach token to every request
 API.interceptors.request.use(
   (req) => {
     const token = localStorage.getItem("token");
@@ -25,7 +22,6 @@ API.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
-// Optional: response interceptor (debugging 🔥)
 API.interceptors.response.use(
   (response) => response,
   (error) => {
