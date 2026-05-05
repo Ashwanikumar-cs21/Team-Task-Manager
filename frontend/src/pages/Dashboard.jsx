@@ -112,6 +112,21 @@ export default function Dashboard() {
               </div>
             </div>
 
+            <div className="bg-white rounded-xl border border-gray-200 p-4 sm:p-5 mb-6 sm:mb-8">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                <div>
+                  <p className="text-sm font-semibold text-gray-700">Overdue tasks</p>
+                  <p className="text-xs text-red-600 mt-1">
+                    {stats.overdue} overdue task{stats.overdue !== 1 ? "s" : ""} still need attention.
+                  </p>
+                </div>
+                <div className="inline-flex items-center gap-2 rounded-full bg-red-50 px-3 py-1.5 text-sm font-semibold text-red-700">
+                  <span className="w-8 h-8 flex items-center justify-center rounded-full bg-red-100 text-red-700">{stats.overdue}</span>
+                  Review overdue items
+                </div>
+              </div>
+            </div>
+
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               {/* Tasks per user */}
               <div className="bg-white rounded-xl border border-gray-200 p-4 sm:p-5">
