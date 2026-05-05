@@ -153,9 +153,39 @@ export default function ProjectList() {
                       </span>
                     </div>
 
-                    <p className="text-sm text-gray-500 line-clamp-2">
+                    <p className="text-sm text-gray-500 line-clamp-2 mb-4">
                       {p.description || "No description"}
                     </p>
+
+                    {/* Members section */}
+                    {p.members && p.members.length > 0 && (
+                      <div className="flex items-center gap-2">
+                        <div className="flex -space-x-2">
+                          {p.members.slice(0, 5).map((m) => {
+                            const memberName = m.user?.name || m.name || "?";
+                            return (
+                              <div
+                                key={m.user?._id || m._id}
+                                className="w-7 h-7 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center text-white text-xs font-bold border border-white"
+                                title={memberName}
+                              >
+                                {memberName[0]?.toUpperCase()}
+                              </div>
+                            );
+                          })}
+                        </div>
+                        {p.members.length > 5 && (
+                          <span className="text-xs text-gray-500 ml-1">
+                            +{p.members.length - 5} more
+                          </span>
+                        )}
+                        {p.members.length <= 5 && (
+                          <span className="text-xs text-gray-500 ml-1">
+                            {p.members.length} member{p.members.length !== 1 ? "s" : ""}
+                          </span>
+                        )}
+                      </div>
+                    )}
                   </div>
                 </div>
               );
