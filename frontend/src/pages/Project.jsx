@@ -65,8 +65,7 @@ function TaskCard({ task, isAdmin, isAssigned, isMember, onStatusChange, onDelet
           )}
           {task.dueDate && (
             <span className={`text-xs whitespace-nowrap ${isOverdue ? "text-red-600 font-semibold" : "text-gray-500"}`}>
-              {isOverdue ? "🔴 " : "📅 "}
-              {new Date(task.dueDate).toLocaleDateString()}
+              {isOverdue ? "Overdue:" : "Due:"} {new Date(task.dueDate).toLocaleDateString()}
             </span>
           )}
         </div>

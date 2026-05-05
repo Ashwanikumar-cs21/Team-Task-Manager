@@ -27,8 +27,8 @@ export default function TaskModal({ members, onClose, onSave }) {
         {/* Modal header - sticky */}
         <div className="flex items-center justify-between px-4 sm:px-6 py-4 border-b border-gray-100 sticky top-0 bg-white">
           <h2 className="text-base font-semibold text-gray-800">Create New Task</h2>
-          <button onClick={onClose} className="text-gray-400 hover:text-gray-600 text-lg leading-none font-bold">
-            ✕
+          <button onClick={onClose} className="text-gray-500 hover:text-gray-700 text-sm font-medium px-3 py-1 rounded-md transition-colors">
+            Close
           </button>
         </div>
 

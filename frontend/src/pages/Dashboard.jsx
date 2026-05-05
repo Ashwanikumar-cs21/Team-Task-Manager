@@ -79,7 +79,7 @@ export default function Dashboard() {
               <div className="bg-red-50 border border-red-200 rounded-lg px-4 sm:px-5 py-4 mb-6 sm:mb-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
                 <div>
                   <p className="text-red-700 font-semibold text-sm">
-                    ⚠️ {stats.overdue} overdue task{stats.overdue > 1 ? "s" : ""}
+                    {stats.overdue} overdue task{stats.overdue > 1 ? "s" : ""}
                   </p>
                   <p className="text-red-500 text-xs mt-0.5">
                     These tasks are past their due date and not yet completed.
@@ -89,7 +89,7 @@ export default function Dashboard() {
                   onClick={() => navigate("/projects")}
                   className="text-xs text-red-600 font-medium hover:underline shrink-0 whitespace-nowrap"
                 >
-                  View Projects →
+                  View Projects
                 </button>
               </div>
             )}

@@ -22,7 +22,7 @@ export default function ProjectList() {
   const { user } = useAuth();
   const navigate = useNavigate();
 
-  // ✅ FIXED: correct API route + error handling
+  // FIXED: correct API route + error handling
   const load = async () => {
     try {
       const res = await API.get("/projects");
@@ -37,7 +37,7 @@ export default function ProjectList() {
     load();
   }, []);
 
-  // ✅ FIXED: correct API route + debug logs
+  // FIXED: correct API route + debug logs
   const create = async (e) => {
     e.preventDefault();
     setLoading(true);
