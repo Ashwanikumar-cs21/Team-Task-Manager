@@ -100,14 +100,14 @@ export default function TaskModal({ members, onClose, onSave }) {
             <button
               type="submit"
               disabled={loading}
-              className="flex-1 bg-blue-600 text-white py-2.5 rounded-lg hover:bg-blue-700 font-medium text-sm disabled:opacity-60 transition-colors"
+              className="button-primary flex-1"
             >
               {loading ? "Creating..." : "Create Task"}
             </button>
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 sm:flex-none bg-gray-100 text-gray-700 px-4 py-2.5 rounded-lg hover:bg-gray-200 font-medium text-sm transition-colors"
+              className="button-secondary flex-1 sm:flex-none"
             >
               Cancel
             </button>

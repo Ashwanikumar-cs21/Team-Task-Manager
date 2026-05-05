@@ -23,6 +23,7 @@ export default function Signup() {
   };
 
   return (
+<<<<<<< HEAD
     <div className="auth-shell">
       <div className="auth-card">
 
@@ -33,13 +34,29 @@ export default function Signup() {
 
         <div className="auth-body">
           <form onSubmit={handle} className="space-y-4">
+=======
+    <div className="page-shell flex items-center justify-center p-4 sm:p-6 md:p-8">
+      <div className="auth-card shadow-lg w-full max-w-sm sm:max-w-md">
+
+        <div className="auth-header">
+          <h1 className="text-2xl sm:text-xl font-bold">Create account</h1>
+          <p className="text-blue-200 text-sm mt-1">Start managing your team's tasks</p>
+        </div>
+
+        <div className="auth-body">
+          <form onSubmit={handle} className="form-stack">
+>>>>>>> e3d1ddcb247c1896050d9cf321a4e04420062bd7
 
             <div>
               <label className="block text-sm font-medium text-slate-700 mb-2">Full Name</label>
               <input
                 value={form.name}
                 onChange={(e) => setForm({ ...form, name: e.target.value })}
+<<<<<<< HEAD
                 className="input-field"
+=======
+                className="form-control"
+>>>>>>> e3d1ddcb247c1896050d9cf321a4e04420062bd7
                 placeholder="John Doe"
                 required
               />
@@ -90,7 +107,11 @@ export default function Signup() {
             <button
               type="submit"
               disabled={loading}
+<<<<<<< HEAD
               className="button-primary w-full"
+=======
+              className="button-primary"
+>>>>>>> e3d1ddcb247c1896050d9cf321a4e04420062bd7
             >
               {loading ? "Creating account..." : "Create Account"}
             </button>

@@ -46,7 +46,7 @@ export default function Dashboard() {
       <div className="page-content">
 
         <div className="mb-6 sm:mb-8">
-          <h1 className="text-2xl sm:text-3xl font-bold text-gray-800">
+          <h1 className="page-heading">
             Welcome, {user?.name?.split(" ")[0]}
           </h1>
           <p className="text-gray-500 text-sm mt-1">
@@ -91,7 +91,7 @@ export default function Dashboard() {
               <div className="bg-red-50 border border-red-200 rounded-lg px-4 sm:px-5 py-4 mb-6 sm:mb-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
                 <div>
                   <p className="text-red-700 font-semibold text-sm">
-                    ⚠️ {stats.overdue} overdue task{stats.overdue > 1 ? "s" : ""}
+                    {stats.overdue} overdue task{stats.overdue > 1 ? "s" : ""}
                   </p>
                   <p className="text-red-500 text-xs mt-0.5">
                     These tasks are past their due date and not yet completed.
@@ -101,7 +101,7 @@ export default function Dashboard() {
                   onClick={() => navigate("/projects")}
                   className="text-xs text-red-600 font-medium hover:underline shrink-0 whitespace-nowrap"
                 >
-                  View Projects →
+                  View Projects
                 </button>
               </div>
             )}
@@ -121,6 +121,21 @@ export default function Dashboard() {
               <div className="flex justify-between text-xs text-gray-400 mt-2 sm:mt-1.5">
                 <span>{stats.done} completed</span>
                 <span>{stats.total - stats.done} remaining</span>
+              </div>
+            </div>
+
+            <div className="bg-white rounded-xl border border-gray-200 p-4 sm:p-5 mb-6 sm:mb-8">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                <div>
+                  <p className="text-sm font-semibold text-gray-700">Overdue tasks</p>
+                  <p className="text-xs text-red-600 mt-1">
+                    {stats.overdue} overdue task{stats.overdue !== 1 ? "s" : ""} still need attention.
+                  </p>
+                </div>
+                <div className="inline-flex items-center gap-2 rounded-full bg-red-50 px-3 py-1.5 text-sm font-semibold text-red-700">
+                  <span className="w-8 h-8 flex items-center justify-center rounded-full bg-red-100 text-red-700">{stats.overdue}</span>
+                  Review overdue items
+                </div>
               </div>
             </div>
 

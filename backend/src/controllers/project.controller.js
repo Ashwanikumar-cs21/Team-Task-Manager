@@ -52,7 +52,7 @@ exports.getProject = async (req, res, next) => {
     const project = await populate(Project.findById(req.params.id));
     if (!project) return res.status(404).json({ message: "Project not found" });
 
-    const isMember = project.members.some((m) => String(m.user?._id || m.user || m) === req.user.id);
+    const isMember = project.members.some((m) => getMemberId(m) === req.user.id);
     if (!isMember) return res.status(403).json({ message: "Access denied" });
 
     res.json(project);

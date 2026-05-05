@@ -13,6 +13,15 @@ const taskSchema = Joi.object({
   project:     Joi.string().required(),
 });
 
+const getMemberId = (member) => String(member.user?._id || member.user || member._id || member);
+const isProjectAdmin = (project, userId) =>
+  project.members.some((member) =>
+    getMemberId(member) === userId &&
+    (member.role === "admin" || (!member.role && String(project.createdBy) === userId))
+  );
+const isProjectMember = (project, userId) =>
+  project.members.some((member) => getMemberId(member) === userId);
+
 // POST /api/tasks
 // Creates a task inside a project; admin only
 exports.createTask = async (req, res, next) => {
@@ -23,8 +32,7 @@ exports.createTask = async (req, res, next) => {
     const project = await Project.findById(req.body.project);
     if (!project) return res.status(404).json({ message: "Project not found" });
 
-    // Only admin can create tasks
-    const isAdmin = project.members.some((m) => String(m.user?._id || m.user || m) === req.user.id && (m.role === "admin" || (!m.role && String(project.createdBy) === req.user.id)));
+    const isAdmin = isProjectAdmin(project, req.user.id);
     if (!isAdmin)
       return res.status(403).json({ message: "Only admin can create tasks" });
 
@@ -54,7 +62,7 @@ exports.getTasks = async (req, res, next) => {
     const project = await Project.findById(req.params.projectId);
     if (!project) return res.status(404).json({ message: "Project not found" });
 
-    const isMember = project.members.some((m) => String(m.user?._id || m.user || m) === req.user.id);
+    const isMember = isProjectMember(project, req.user.id);
     if (!isMember) return res.status(403).json({ message: "Not a member" });
 
     const tasks = await Task.find({ project: req.params.projectId })
@@ -75,8 +83,8 @@ exports.updateTask = async (req, res, next) => {
     if (!task) return res.status(404).json({ message: "Task not found" });
 
     const project = await Project.findById(task.project);
-    const isAdmin    = project.members.some((m) => String(m.user?._id || m.user || m) === req.user.id && (m.role === "admin" || (!m.role && String(project.createdBy) === req.user.id)));
-    const isMember   = project.members.some((m) => String(m.user?._id || m.user || m) === req.user.id);
+    const isAdmin    = isProjectAdmin(project, req.user.id);
+    const isMember   = isProjectMember(project, req.user.id);
 
     if (!isMember)
       return res.status(403).json({ message: "Not authorized to update this task" });
@@ -109,7 +117,7 @@ exports.deleteTask = async (req, res, next) => {
     if (!task) return res.status(404).json({ message: "Task not found" });
 
     const project = await Project.findById(task.project);
-    const isAdmin = project.members.some((m) => String(m.user?._id || m.user || m) === req.user.id && (m.role === "admin" || (!m.role && String(project.createdBy) === req.user.id)));
+    const isAdmin = isProjectAdmin(project, req.user.id);
     if (!isAdmin)
       return res.status(403).json({ message: "Only admin can delete tasks" });
 

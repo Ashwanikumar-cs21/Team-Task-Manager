@@ -22,7 +22,7 @@ export default function ProjectList() {
   const { user } = useAuth();
   const navigate = useNavigate();
 
-  // ✅ FIXED: correct API route + error handling
+  // FIXED: correct API route + error handling
   const load = async () => {
     try {
       const res = await API.get("/projects");
@@ -37,7 +37,7 @@ export default function ProjectList() {
     load();
   }, []);
 
-  // ✅ FIXED: correct API route + debug logs
+  // FIXED: correct API route + debug logs
   const create = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -65,14 +65,14 @@ export default function ProjectList() {
 
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 sm:mb-8 gap-4">
           <div>
-            <h1 className="text-2xl sm:text-3xl font-bold text-gray-800">Projects</h1>
-            <p className="text-gray-500 text-sm mt-0.5">
+            <h1 className="page-heading">Projects</h1>
+            <p className="page-copy">
               {projects.length} project{projects.length !== 1 ? "s" : ""}
             </p>
           </div>
           <button
             onClick={() => setShowForm(!showForm)}
-            className="bg-blue-600 text-white px-4 py-2 sm:py-2.5 rounded-lg hover:bg-blue-700 text-sm font-medium transition-colors w-full sm:w-auto"
+            className="button-primary"
           >
             + New Project
           </button>
@@ -80,11 +80,19 @@ export default function ProjectList() {
 
         {showForm && (
           <div className="panel mb-6 sm:mb-8">
+<<<<<<< HEAD
             <div className="p-6">
               <h2 className="section-title text-lg">New Project</h2>
             </div>
             <div className="panel-body p-6 pt-0">
               <form onSubmit={create} className="space-y-4">
+=======
+            <div className="panel-header">
+              <h2 className="font-semibold text-lg">New Project</h2>
+            </div>
+            <div className="panel-body">
+              <form onSubmit={create} className="form-stack">
+>>>>>>> e3d1ddcb247c1896050d9cf321a4e04420062bd7
                 <input
                   placeholder="Project name"
                   required
@@ -92,7 +100,11 @@ export default function ProjectList() {
                   onChange={(e) =>
                     setForm({ ...form, name: e.target.value })
                   }
+<<<<<<< HEAD
                   className="input-field"
+=======
+                  className="form-control"
+>>>>>>> e3d1ddcb247c1896050d9cf321a4e04420062bd7
                 />
 
                 <textarea
@@ -101,11 +113,17 @@ export default function ProjectList() {
                   onChange={(e) =>
                     setForm({ ...form, description: e.target.value })
                   }
+<<<<<<< HEAD
                   className="input-field resize-none"
                   rows="3"
                 />
 
                 {error && <p className="text-red-500 text-sm">{error}</p>}
+=======
+                  className="form-control resize-none"
+                  rows="3"
+                />
+>>>>>>> e3d1ddcb247c1896050d9cf321a4e04420062bd7
 
                 <div className="flex flex-col sm:flex-row gap-3">
                   <button
@@ -116,6 +134,7 @@ export default function ProjectList() {
                     {loading ? "Creating..." : "Create"}
                   </button>
 
+<<<<<<< HEAD
                   <button
                     type="button"
                     onClick={() => setShowForm(false)}
@@ -126,6 +145,26 @@ export default function ProjectList() {
                 </div>
               </form>
             </div>
+=======
+              <div className="flex flex-col sm:flex-row gap-3">
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="button-primary flex-1"
+                >
+                  {loading ? "Creating..." : "Create"}
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setShowForm(false)}
+                  className="button-secondary flex-1 sm:flex-none"
+                >
+                  Cancel
+                </button>
+              </div>
+            </form>
+>>>>>>> e3d1ddcb247c1896050d9cf321a4e04420062bd7
           </div>
         )}
 
@@ -149,7 +188,11 @@ export default function ProjectList() {
                   <div className={`project-card-top ${CARD_COLORS[i % CARD_COLORS.length]}`} />
 
                   <div className="project-card-body">
+<<<<<<< HEAD
                     <div className="flex justify-between items-start mb-3 gap-2">
+=======
+                    <div className="project-card-meta">
+>>>>>>> e3d1ddcb247c1896050d9cf321a4e04420062bd7
                       <h2 className="project-card-title">{p.name}</h2>
                       <span className="text-xs bg-gray-100 text-gray-700 px-2 py-1 rounded whitespace-nowrap shrink-0">
                         {myRole}
@@ -159,6 +202,36 @@ export default function ProjectList() {
                     <p className="project-card-description">
                       {p.description || "No description"}
                     </p>
+
+                    {/* Members section */}
+                    {p.members && p.members.length > 0 && (
+                      <div className="flex items-center gap-2">
+                        <div className="flex -space-x-2">
+                          {p.members.slice(0, 5).map((m) => {
+                            const memberName = m.user?.name || m.name || "?";
+                            return (
+                              <div
+                                key={m.user?._id || m._id}
+                                className="w-7 h-7 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center text-white text-xs font-bold border border-white"
+                                title={memberName}
+                              >
+                                {memberName[0]?.toUpperCase()}
+                              </div>
+                            );
+                          })}
+                        </div>
+                        {p.members.length > 5 && (
+                          <span className="text-xs text-gray-500 ml-1">
+                            +{p.members.length - 5} more
+                          </span>
+                        )}
+                        {p.members.length <= 5 && (
+                          <span className="text-xs text-gray-500 ml-1">
+                            {p.members.length} member{p.members.length !== 1 ? "s" : ""}
+                          </span>
+                        )}
+                      </div>
+                    )}
                   </div>
                 </div>
               );
