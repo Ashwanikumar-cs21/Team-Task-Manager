@@ -41,9 +41,9 @@ export default function Dashboard() {
     stats && stats.total > 0 ? Math.round((stats.done / stats.total) * 100) : 0;
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="page-shell">
       <Navbar />
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+      <div className="page-content">
 
         <div className="mb-6 sm:mb-8">
           <h1 className="text-2xl sm:text-3xl font-bold text-gray-800">
@@ -68,10 +68,22 @@ export default function Dashboard() {
           <>
             {/* Stat cards - responsive grid */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6 sm:mb-8">
-              <StatCard label="Total Tasks"  value={stats.total} />
-              <StatCard label="To Do"        value={stats.todo} />
-              <StatCard label="In Progress"  value={stats.inprogress} color="text-blue-600" />
-              <StatCard label="Completed"    value={stats.done}       color="text-green-600" />
+              <div className="card p-5">
+                <p className="text-2xl font-bold text-slate-900">{stats.total}</p>
+                <p className="text-sm text-slate-500 mt-1">Total Tasks</p>
+              </div>
+              <div className="card p-5">
+                <p className="text-2xl font-bold text-slate-900">{stats.todo}</p>
+                <p className="text-sm text-slate-500 mt-1">To Do</p>
+              </div>
+              <div className="card p-5">
+                <p className="text-2xl font-bold text-blue-600">{stats.inprogress}</p>
+                <p className="text-sm text-slate-500 mt-1">In Progress</p>
+              </div>
+              <div className="card p-5">
+                <p className="text-2xl font-bold text-green-600">{stats.done}</p>
+                <p className="text-sm text-slate-500 mt-1">Completed</p>
+              </div>
             </div>
 
             {/* Overdue banner */}
@@ -171,7 +183,7 @@ export default function Dashboard() {
             <div className="mt-6 flex justify-center">
               <button
                 onClick={() => navigate("/projects")}
-                className="bg-blue-600 text-white px-8 py-2.5 rounded-lg hover:bg-blue-700 font-medium text-sm transition-colors"
+                className="button-primary"
               >
                 Go to Projects
               </button>

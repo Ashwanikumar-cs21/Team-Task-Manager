@@ -59,9 +59,9 @@ export default function ProjectList() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="page-shell">
       <Navbar />
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+      <div className="page-content">
 
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 sm:mb-8 gap-4">
           <div>
@@ -79,50 +79,53 @@ export default function ProjectList() {
         </div>
 
         {showForm && (
-          <div className="bg-white rounded-xl border p-4 sm:p-6 mb-6 sm:mb-8">
-            <h2 className="font-semibold mb-4 text-lg">New Project</h2>
+          <div className="panel mb-6 sm:mb-8">
+            <div className="p-6">
+              <h2 className="section-title text-lg">New Project</h2>
+            </div>
+            <div className="panel-body p-6 pt-0">
+              <form onSubmit={create} className="space-y-4">
+                <input
+                  placeholder="Project name"
+                  required
+                  value={form.name}
+                  onChange={(e) =>
+                    setForm({ ...form, name: e.target.value })
+                  }
+                  className="input-field"
+                />
 
-            <form onSubmit={create} className="space-y-3">
-              <input
-                placeholder="Project name"
-                required
-                value={form.name}
-                onChange={(e) =>
-                  setForm({ ...form, name: e.target.value })
-                }
-                className="w-full border border-gray-300 rounded px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
-              />
+                <textarea
+                  placeholder="Description"
+                  value={form.description}
+                  onChange={(e) =>
+                    setForm({ ...form, description: e.target.value })
+                  }
+                  className="input-field resize-none"
+                  rows="3"
+                />
 
-              <textarea
-                placeholder="Description"
-                value={form.description}
-                onChange={(e) =>
-                  setForm({ ...form, description: e.target.value })
-                }
-                className="w-full border border-gray-300 rounded px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition resize-none"
-                rows="3"
-              />
+                {error && <p className="text-red-500 text-sm">{error}</p>}
 
-              {error && <p className="text-red-500 text-sm">{error}</p>}
+                <div className="flex flex-col sm:flex-row gap-3">
+                  <button
+                    type="submit"
+                    disabled={loading}
+                    className="button-primary flex-1"
+                  >
+                    {loading ? "Creating..." : "Create"}
+                  </button>
 
-              <div className="flex flex-col sm:flex-row gap-3">
-                <button
-                  type="submit"
-                  disabled={loading}
-                  className="flex-1 bg-blue-600 text-white px-5 py-2 rounded hover:bg-blue-700 disabled:opacity-60 text-sm font-medium transition-colors"
-                >
-                  {loading ? "Creating..." : "Create"}
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => setShowForm(false)}
-                  className="flex-1 sm:flex-none bg-gray-200 text-gray-700 px-5 py-2 rounded hover:bg-gray-300 text-sm font-medium transition-colors"
-                >
-                  Cancel
-                </button>
-              </div>
-            </form>
+                  <button
+                    type="button"
+                    onClick={() => setShowForm(false)}
+                    className="button-secondary flex-1 sm:flex-none"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </form>
+            </div>
           </div>
         )}
 
@@ -141,19 +144,19 @@ export default function ProjectList() {
                 <div
                   key={p._id}
                   onClick={() => navigate(`/projects/${p._id}`)}
-                  className="bg-white border border-gray-200 rounded-xl cursor-pointer hover:shadow-lg transition-shadow"
+                  className="project-card"
                 >
-                  <div className={`h-1.5 ${CARD_COLORS[i % CARD_COLORS.length]}`} />
+                  <div className={`project-card-top ${CARD_COLORS[i % CARD_COLORS.length]}`} />
 
-                  <div className="p-4 sm:p-5">
+                  <div className="project-card-body">
                     <div className="flex justify-between items-start mb-3 gap-2">
-                      <h2 className="font-semibold text-gray-800 text-sm leading-snug">{p.name}</h2>
+                      <h2 className="project-card-title">{p.name}</h2>
                       <span className="text-xs bg-gray-100 text-gray-700 px-2 py-1 rounded whitespace-nowrap shrink-0">
                         {myRole}
                       </span>
                     </div>
 
-                    <p className="text-sm text-gray-500 line-clamp-2">
+                    <p className="project-card-description">
                       {p.description || "No description"}
                     </p>
                   </div>

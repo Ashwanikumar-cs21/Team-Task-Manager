@@ -195,9 +195,9 @@ export default function Project() {
 
   if (!project)
     return (
-      <div className="min-h-screen bg-gray-50">
+      <div className="page-shell">
         <Navbar />
-        <div className="flex items-center justify-center py-20">
+        <div className="page-content flex items-center justify-center py-20">
           <div className="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin" />
         </div>
       </div>
@@ -215,7 +215,7 @@ export default function Project() {
   })).filter((m) => m.id && m.id !== "undefined");
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="page-shell">
       <Navbar />
 
       {showModal && (
@@ -226,7 +226,7 @@ export default function Project() {
         />
       )}
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+      <div className="page-content">
 
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between mb-6 gap-4">
@@ -245,7 +245,7 @@ export default function Project() {
           {isAdmin && (
             <button
               onClick={() => setShowModal(true)}
-              className="bg-blue-600 text-white px-4 py-2 sm:py-2.5 rounded-lg hover:bg-blue-700 text-sm font-medium transition-colors w-full sm:w-auto"
+              className="button-primary w-full sm:w-auto"
             >
               + Add Task
             </button>
