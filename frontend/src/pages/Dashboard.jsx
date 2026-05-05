@@ -41,12 +41,12 @@ export default function Dashboard() {
     stats && stats.total > 0 ? Math.round((stats.done / stats.total) * 100) : 0;
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="page-shell">
       <Navbar />
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+      <div className="page-content">
 
         <div className="mb-6 sm:mb-8">
-          <h1 className="text-2xl sm:text-3xl font-bold text-gray-800">
+          <h1 className="page-heading">
             Welcome, {user?.name?.split(" ")[0]}
           </h1>
           <p className="text-gray-500 text-sm mt-1">
@@ -171,7 +171,7 @@ export default function Dashboard() {
             <div className="mt-6 flex justify-center">
               <button
                 onClick={() => navigate("/projects")}
-                className="bg-blue-600 text-white px-8 py-2.5 rounded-lg hover:bg-blue-700 font-medium text-sm transition-colors"
+                className="button-primary"
               >
                 Go to Projects
               </button>

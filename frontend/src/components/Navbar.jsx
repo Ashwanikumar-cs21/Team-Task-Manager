@@ -30,16 +30,16 @@ export default function Navbar() {
   );
 
   return (
-    <nav className="bg-blue-700 text-white px-4 md:px-6 py-3 flex items-center justify-between shadow">
+    <nav className="nav-bar">
       {/* Left: brand + nav links */}
       <div className="flex items-center gap-2 md:gap-4">
-        <Link to="/dashboard" className="font-bold text-base flex items-center gap-2">
-          <span className="bg-white text-blue-700 rounded px-2 py-0.5 text-xs font-black">TM</span>
+        <Link to="/dashboard" className="nav-brand">
+          <span className="nav-brand-mark">TM</span>
           <span className="hidden sm:inline">TaskManager</span>
         </Link>
         
         {/* Desktop nav links */}
-        <div className="hidden md:flex gap-2">
+        <div className="hidden md:flex gap-2 nav-links">
           {navLink("/dashboard", "Dashboard")}
           {navLink("/projects", "Projects")}
         </div>
@@ -48,17 +48,14 @@ export default function Navbar() {
       {/* Right: user info + logout (desktop) */}
       <div className="hidden md:flex items-center gap-3">
         <div className="flex items-center gap-2">
-          {/* Avatar shows first letter of user's name */}
-          <div className="w-7 h-7 rounded-full bg-white/20 flex items-center justify-center text-xs font-bold">
-            {user?.name?.[0]?.toUpperCase()}
+            <div className="nav-avatar">
+              {user?.name?.[0]?.toUpperCase()}
+            </div>
+            <span className="text-sm text-blue-100">{user?.name}</span>
           </div>
-          <span className="text-sm text-blue-100">{user?.name}</span>
-        </div>
-        <button
-          onClick={handleLogout}
-          className="text-sm bg-white/10 hover:bg-white/20 border border-white/20 px-3 py-1.5 rounded transition-colors"
-        >
-          Logout
+          <button
+            onClick={handleLogout}
+            className="nav-button"
         </button>
       </div>
 
@@ -75,13 +72,13 @@ export default function Navbar() {
       {/* Mobile menu */}
       {mobileMenuOpen && (
         <div className="absolute top-full left-0 right-0 bg-blue-800 md:hidden shadow-lg z-50">
-          <div className="flex flex-col gap-2 px-4 py-4">
+          <div className="flex flex-col gap-2 px-4 py-4 mobile-menu">
             {navLink("/dashboard", "Dashboard")}
             {navLink("/projects", "Projects")}
             
             <div className="border-t border-blue-600 pt-4 mt-2 flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <div className="w-7 h-7 rounded-full bg-white/20 flex items-center justify-center text-xs font-bold">
+                <div className="nav-avatar">
                   {user?.name?.[0]?.toUpperCase()}
                 </div>
                 <span className="text-sm text-blue-100">{user?.name}</span>
@@ -91,7 +88,7 @@ export default function Navbar() {
                   handleLogout();
                   setMobileMenuOpen(false);
                 }}
-                className="text-xs bg-white/10 hover:bg-white/20 border border-white/20 px-2 py-1.5 rounded transition-colors"
+                className="nav-button text-xs"
               >
                 Logout
               </button>

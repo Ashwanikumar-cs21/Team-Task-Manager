@@ -23,23 +23,23 @@ export default function Signup() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-blue-100 flex items-center justify-center p-4 sm:p-6 md:p-8">
-      <div className="bg-white rounded-xl shadow-lg w-full max-w-sm sm:max-w-md">
+    <div className="page-shell flex items-center justify-center p-4 sm:p-6 md:p-8">
+      <div className="auth-card shadow-lg w-full max-w-sm sm:max-w-md">
 
-        <div className="bg-blue-700 px-6 sm:px-8 py-6 sm:py-8 rounded-t-xl">
-          <h1 className="text-2xl sm:text-xl font-bold text-white">Create account</h1>
+        <div className="auth-header">
+          <h1 className="text-2xl sm:text-xl font-bold">Create account</h1>
           <p className="text-blue-200 text-sm mt-1">Start managing your team's tasks</p>
         </div>
 
-        <div className="px-6 sm:px-8 py-6 sm:py-8">
-          <form onSubmit={handle} className="space-y-4">
+        <div className="auth-body">
+          <form onSubmit={handle} className="form-stack">
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">Full Name</label>
               <input
                 value={form.name}
                 onChange={(e) => setForm({ ...form, name: e.target.value })}
-                className="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+                className="form-control"
                 placeholder="John Doe"
                 required
               />
@@ -90,7 +90,7 @@ export default function Signup() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-blue-600 text-white py-2.5 rounded-lg hover:bg-blue-700 disabled:opacity-60 font-medium text-sm transition-colors"
+              className="button-primary"
             >
               {loading ? "Creating account..." : "Create Account"}
             </button>
@@ -98,7 +98,7 @@ export default function Signup() {
 
           <p className="text-center text-sm text-gray-500 mt-5">
             Already have an account?{" "}
-            <Link to="/login" className="text-blue-600 font-medium hover:underline">
+            <Link to="/login" className="link-action">
               Sign in
             </Link>
           </p>

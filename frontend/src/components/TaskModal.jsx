@@ -20,20 +20,17 @@ export default function TaskModal({ members, onClose, onSave }) {
   };
 
   return (
-    // Full-screen overlay backdrop
-    <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-xl shadow-xl w-full max-w-md max-h-[90vh] overflow-y-auto">
+    <div className="modal-overlay">
+      <div className="modal-card">
 
-        {/* Modal header - sticky */}
-        <div className="flex items-center justify-between px-4 sm:px-6 py-4 border-b border-gray-100 sticky top-0 bg-white">
+        <div className="modal-header">
           <h2 className="text-base font-semibold text-gray-800">Create New Task</h2>
-          <button onClick={onClose} className="text-gray-500 hover:text-gray-700 text-sm font-medium px-3 py-1 rounded-md transition-colors">
+          <button onClick={onClose} className="modal-close">
             Close
           </button>
         </div>
 
-        {/* Task creation form */}
-        <form onSubmit={handle} className="px-4 sm:px-6 py-5 space-y-4">
+        <form onSubmit={handle} className="modal-body space-y-4">
 
           {/* Title field (required) */}
           <div>
@@ -103,14 +100,14 @@ export default function TaskModal({ members, onClose, onSave }) {
             <button
               type="submit"
               disabled={loading}
-              className="flex-1 bg-blue-600 text-white py-2.5 rounded-lg hover:bg-blue-700 font-medium text-sm disabled:opacity-60 transition-colors"
+              className="button-primary flex-1"
             >
               {loading ? "Creating..." : "Create Task"}
             </button>
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 sm:flex-none bg-gray-100 text-gray-700 px-4 py-2.5 rounded-lg hover:bg-gray-200 font-medium text-sm transition-colors"
+              className="button-secondary flex-1 sm:flex-none"
             >
               Cancel
             </button>
