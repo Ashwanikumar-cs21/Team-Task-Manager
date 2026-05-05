@@ -226,26 +226,26 @@ export default function Project() {
         />
       )}
 
-      <div className="max-w-7xl mx-auto px-4 py-6">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
 
         {/* Header */}
-        <div className="flex items-start justify-between mb-1">
-          <div>
+        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between mb-6 gap-4">
+          <div className="flex-1">
             <button
               onClick={() => navigate("/projects")}
-              className="text-sm text-gray-400 hover:text-gray-600 mb-1"
+              className="text-sm text-gray-400 hover:text-gray-600 mb-2 inline-block"
             >
               &larr; Projects
             </button>
-            <h1 className="text-xl font-bold text-gray-800">{project.name}</h1>
+            <h1 className="text-2xl sm:text-3xl font-bold text-gray-800">{project.name}</h1>
             {project.description && (
-              <p className="text-gray-500 text-sm mt-0.5">{project.description}</p>
+              <p className="text-gray-500 text-sm mt-0.5 line-clamp-2">{project.description}</p>
             )}
           </div>
           {isAdmin && (
             <button
               onClick={() => setShowModal(true)}
-              className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 text-sm font-medium"
+              className="bg-blue-600 text-white px-4 py-2 sm:py-2.5 rounded-lg hover:bg-blue-700 text-sm font-medium transition-colors w-full sm:w-auto"
             >
               + Add Task
             </button>
@@ -253,18 +253,18 @@ export default function Project() {
         </div>
 
         {error && (
-          <div className="bg-red-50 border border-red-200 text-red-600 text-sm rounded-lg px-4 py-2.5 mt-3">
+          <div className="bg-red-50 border border-red-200 text-red-600 text-sm rounded-lg px-4 py-3 mb-6">
             {error}
           </div>
         )}
 
-        {/* Tabs */}
-        <div className="flex gap-1 mt-5 mb-5 bg-gray-100 rounded-lg p-1 w-fit">
+        {/* Tabs - scrollable on mobile */}
+        <div className="flex gap-1 mb-6 bg-gray-100 rounded-lg p-1 overflow-x-auto">
           {["board", "members", "activity"].map((tab) => (
             <button
               key={tab}
               onClick={() => setActiveTab(tab)}
-              className={`px-4 py-1.5 rounded text-sm font-medium capitalize transition-colors ${
+              className={`px-3 sm:px-4 py-2 rounded text-sm font-medium capitalize transition-colors whitespace-nowrap ${
                 activeTab === tab
                   ? "bg-white text-gray-800 shadow-sm"
                   : "text-gray-500 hover:text-gray-700"
@@ -277,21 +277,21 @@ export default function Project() {
 
         {/* ── BOARD TAB ── */}
         {activeTab === "board" && (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 auto-rows-max">
             {STATUSES.map((status) => (
               <div
                 key={status}
                 onDragOver={onDragOver}
                 onDrop={(e) => onDrop(e, status)}
-                className={`rounded-xl border-2 border-dashed min-h-[200px] ${STATUS_COLUMN[status]}`}
+                className={`rounded-xl border-2 border-dashed min-h-[300px] md:min-h-[400px] ${STATUS_COLUMN[status]}`}
               >
-                <div className="px-4 py-3 border-b border-inherit flex items-center justify-between">
+                <div className="sticky top-0 px-4 py-3 border-b border-inherit flex items-center justify-between bg-inherit rounded-t-lg">
                   <h2 className="font-semibold text-sm text-gray-700">{STATUS_LABEL[status]}</h2>
                   <span className="text-xs font-bold bg-white/70 px-2 py-0.5 rounded-full">
                     {grouped[status].length}
                   </span>
                 </div>
-                <div className="p-3 space-y-3">
+                <div className="p-3 space-y-3 overflow-y-auto">
                   {grouped[status].length === 0 && (
                     <p className="text-center text-xs text-gray-400 py-6">No tasks</p>
                   )}
@@ -315,25 +315,25 @@ export default function Project() {
 
         {/* ── MEMBERS TAB ── */}
         {activeTab === "members" && (
-          <div className="bg-white rounded-xl border border-gray-200 p-6 max-w-xl">
-            <h2 className="font-semibold text-gray-800 mb-4">
+          <div className="bg-white rounded-xl border border-gray-200 p-4 sm:p-6">
+            <h2 className="font-semibold text-gray-800 mb-4 text-lg">
               Team Members ({normalizedMembers.length})
             </h2>
 
-            <ul className="space-y-3 mb-5">
+            <ul className="space-y-3 mb-6">
               {normalizedMembers.map((m) => (
-                <li key={m.id} className="flex items-center justify-between">
+                <li key={m.id} className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pb-3 border-b border-gray-100 last:border-0">
                   <div className="flex items-center gap-3">
-                    <div className="w-9 h-9 rounded-full bg-blue-500 flex items-center justify-center text-white font-bold">
+                    <div className="w-9 h-9 rounded-full bg-blue-500 flex items-center justify-center text-white font-bold shrink-0">
                       {m.name?.[0]?.toUpperCase()}
                     </div>
-                    <div>
+                    <div className="min-w-0">
                       <p className="text-sm font-medium text-gray-800">{m.name}</p>
-                      <p className="text-xs text-gray-400">{m.email}</p>
+                      <p className="text-xs text-gray-400 truncate">{m.email}</p>
                     </div>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <span className={`text-xs px-2 py-0.5 rounded-full font-medium border ${
+                  <div className="flex flex-col sm:flex-row sm:items-center gap-2">
+                    <span className={`text-xs px-2 py-1 rounded-full font-medium border text-center ${
                       m.role === "admin"
                         ? "bg-blue-50 text-blue-600 border-blue-100"
                         : "bg-gray-50 text-gray-500 border-gray-200"
@@ -344,13 +344,13 @@ export default function Project() {
                       <>
                         <button
                           onClick={() => updateRole(m.id, m.role === "admin" ? "member" : "admin")}
-                          className="text-xs text-indigo-400 hover:text-indigo-600 border border-indigo-200 hover:border-indigo-400 px-2 py-0.5 rounded transition-colors"
+                          className="text-xs text-indigo-400 hover:text-indigo-600 border border-indigo-200 hover:border-indigo-400 px-2 py-1 rounded transition-colors"
                         >
                           Make {m.role === "admin" ? "Member" : "Admin"}
                         </button>
                         <button
                           onClick={() => removeMember(m.id)}
-                          className="text-xs text-red-400 hover:text-red-600 border border-red-200 hover:border-red-400 px-2 py-0.5 rounded transition-colors"
+                          className="text-xs text-red-400 hover:text-red-600 border border-red-200 hover:border-red-400 px-2 py-1 rounded transition-colors"
                         >
                           Remove
                         </button>
@@ -363,10 +363,10 @@ export default function Project() {
 
             {isAdmin && (
               <div className="border-t border-gray-100 pt-4">
-                <p className="text-sm font-medium text-gray-700 mb-2">Add Member by Email</p>
-                <form onSubmit={addMember} className="flex gap-2">
+                <p className="text-sm font-medium text-gray-700 mb-3">Add Member by Email</p>
+                <form onSubmit={addMember} className="flex flex-col sm:flex-row gap-2">
                   <input
-                    className="flex-1 border border-gray-300 rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="flex-1 border border-gray-300 rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
                     placeholder="member@example.com"
                     type="email"
                     value={memberEmail}
@@ -374,7 +374,7 @@ export default function Project() {
                   />
                   <button
                     type="submit"
-                    className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 text-sm font-medium"
+                    className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 text-sm font-medium transition-colors"
                   >
                     Add
                   </button>
@@ -389,18 +389,18 @@ export default function Project() {
 
         {/* ── ACTIVITY TAB ── */}
         {activeTab === "activity" && (
-          <div className="bg-white rounded-xl border border-gray-200 p-6 max-w-xl">
-            <h2 className="font-semibold text-gray-800 mb-4">Activity Log</h2>
+          <div className="bg-white rounded-xl border border-gray-200 p-4 sm:p-6">
+            <h2 className="font-semibold text-gray-800 mb-4 text-lg">Activity Log</h2>
             {activity.length === 0 ? (
               <p className="text-gray-400 text-sm text-center py-8">No activity yet</p>
             ) : (
-              <ul className="space-y-3">
+              <ul className="space-y-3 max-w-2xl">
                 {activity.map((log) => (
-                  <li key={log._id} className="flex items-start gap-3">
+                  <li key={log._id} className="flex items-start gap-3 pb-3 border-b border-gray-100 last:border-0">
                     <div className="w-7 h-7 rounded-full bg-blue-500 flex items-center justify-center text-white text-xs font-bold shrink-0 mt-0.5">
                       {log.user?.name?.[0]?.toUpperCase()}
                     </div>
-                    <div>
+                    <div className="min-w-0 flex-1">
                       <p className="text-sm text-gray-700">
                         <span className="font-medium">{log.user?.name}</span> {log.action}
                       </p>

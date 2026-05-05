@@ -43,10 +43,10 @@ export default function Dashboard() {
   return (
     <div className="min-h-screen bg-gray-50">
       <Navbar />
-      <div className="max-w-5xl mx-auto px-4 py-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
 
-        <div className="mb-6">
-          <h1 className="text-xl font-bold text-gray-800">
+        <div className="mb-6 sm:mb-8">
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-800">
             Welcome, {user?.name?.split(" ")[0]}
           </h1>
           <p className="text-gray-500 text-sm mt-1">
@@ -66,8 +66,8 @@ export default function Dashboard() {
           </div>
         ) : (
           <>
-            {/* Stat cards */}
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+            {/* Stat cards - responsive grid */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6 sm:mb-8">
               <StatCard label="Total Tasks"  value={stats.total} />
               <StatCard label="To Do"        value={stats.todo} />
               <StatCard label="In Progress"  value={stats.inprogress} color="text-blue-600" />
@@ -76,7 +76,7 @@ export default function Dashboard() {
 
             {/* Overdue banner */}
             {stats.overdue > 0 && (
-              <div className="bg-red-50 border border-red-200 rounded-lg px-5 py-4 mb-6 flex items-center justify-between">
+              <div className="bg-red-50 border border-red-200 rounded-lg px-4 sm:px-5 py-4 mb-6 sm:mb-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
                 <div>
                   <p className="text-red-700 font-semibold text-sm">
                     ⚠️ {stats.overdue} overdue task{stats.overdue > 1 ? "s" : ""}
@@ -87,7 +87,7 @@ export default function Dashboard() {
                 </div>
                 <button
                   onClick={() => navigate("/projects")}
-                  className="text-xs text-red-600 font-medium hover:underline ml-4 shrink-0"
+                  className="text-xs text-red-600 font-medium hover:underline shrink-0 whitespace-nowrap"
                 >
                   View Projects →
                 </button>
@@ -95,8 +95,8 @@ export default function Dashboard() {
             )}
 
             {/* Progress bar */}
-            <div className="bg-white rounded-xl border border-gray-200 p-5 mb-6">
-              <div className="flex items-center justify-between mb-2">
+            <div className="bg-white rounded-xl border border-gray-200 p-4 sm:p-5 mb-6 sm:mb-8">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-3 gap-2">
                 <p className="text-sm font-semibold text-gray-700">Overall Completion</p>
                 <p className="text-sm font-bold text-blue-600">{completionPct}%</p>
               </div>
@@ -106,16 +106,16 @@ export default function Dashboard() {
                   style={{ width: `${completionPct}%` }}
                 />
               </div>
-              <div className="flex justify-between text-xs text-gray-400 mt-1.5">
+              <div className="flex justify-between text-xs text-gray-400 mt-2 sm:mt-1.5">
                 <span>{stats.done} completed</span>
                 <span>{stats.total - stats.done} remaining</span>
               </div>
             </div>
 
-            <div className="grid md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               {/* Tasks per user */}
-              <div className="bg-white rounded-xl border border-gray-200 p-5">
-                <h2 className="font-semibold text-gray-700 mb-4">Tasks per Member</h2>
+              <div className="bg-white rounded-xl border border-gray-200 p-4 sm:p-5">
+                <h2 className="font-semibold text-gray-700 mb-4 text-base">Tasks per Member</h2>
                 {Object.keys(stats.byUser).length === 0 ? (
                   <p className="text-gray-400 text-sm text-center py-6">No assignments yet</p>
                 ) : (
@@ -126,9 +126,9 @@ export default function Dashboard() {
                         const max = Math.max(...Object.values(stats.byUser));
                         return (
                           <li key={name}>
-                            <div className="flex justify-between text-sm mb-1">
-                              <span className="text-gray-700">{name}</span>
-                              <span className="text-blue-600 font-semibold">{count}</span>
+                            <div className="flex justify-between text-sm mb-1 gap-2">
+                              <span className="text-gray-700 truncate">{name}</span>
+                              <span className="text-blue-600 font-semibold shrink-0">{count}</span>
                             </div>
                             <div className="w-full bg-gray-100 rounded-full h-1.5">
                               <div
@@ -144,8 +144,8 @@ export default function Dashboard() {
               </div>
 
               {/* Recent tasks */}
-              <div className="bg-white rounded-xl border border-gray-200 p-5">
-                <h2 className="font-semibold text-gray-700 mb-4">Recent Tasks</h2>
+              <div className="bg-white rounded-xl border border-gray-200 p-4 sm:p-5">
+                <h2 className="font-semibold text-gray-700 mb-4 text-base">Recent Tasks</h2>
                 {stats.recentTasks.length === 0 ? (
                   <p className="text-gray-400 text-sm text-center py-6">No tasks yet</p>
                 ) : (
