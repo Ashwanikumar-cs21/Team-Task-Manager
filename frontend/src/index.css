@@ -437,6 +437,44 @@ button.btn-secondary:hover {
   will-change: transform, box-shadow;
 }
 
+.activity-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  max-width: 100%;
+}
+
+.activity-entry {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.85rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.activity-entry:last-child {
+  border-bottom: 0;
+  padding-bottom: 0;
+}
+
+.activity-avatar {
+  min-width: 2.25rem;
+  min-height: 2.25rem;
+  border-radius: 9999px;
+  background: #2563eb;
+  color: white;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.activity-content {
+  min-width: 0;
+  flex: 1;
+}
+
 /* Kanban Board Columns */
 .kanban-column {
   background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(250, 250, 250, 0.95) 100%);
